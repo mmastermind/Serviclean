@@ -72,7 +72,7 @@
     <Content Include="Serviclean4\static\scripts\_references.js" />
     <Content Include="Serviclean4\templates\about.html" />
     <Content Include="Serviclean4\templates\contact.html" />
-    <Content Include="Serviclean4\templates\index.html" />
+    <Content Include="Serviclean4\templates\home.html" />
     <Content Include="Serviclean4\templates\layout.html" />
     <Content Include="Serviclean4\templates\WebPage1.html" />
   </ItemGroup>
