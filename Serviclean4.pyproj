@@ -74,6 +74,7 @@
     <Content Include="Serviclean4\templates\contact.html" />
     <Content Include="Serviclean4\templates\index.html" />
     <Content Include="Serviclean4\templates\layout.html" />
+    <Content Include="Serviclean4\templates\WebPage1.html" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|VisualStudio|Serviclean4" />
