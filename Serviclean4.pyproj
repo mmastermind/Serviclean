@@ -29,6 +29,12 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="runserver.py" />
+    <Compile Include="Serviclean4\extensions.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serviclean4\settings.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serviclean4\__init__.py" />
     <Compile Include="Serviclean4\views.py" />
   </ItemGroup>
@@ -66,11 +72,24 @@
     <Content Include="Serviclean4\static\scripts\_references.js" />
     <Content Include="Serviclean4\templates\about.html" />
     <Content Include="Serviclean4\templates\contact.html" />
-    <Content Include="Serviclean4\templates\index.html" />
+    <Content Include="Serviclean4\templates\home.html" />
     <Content Include="Serviclean4\templates\layout.html" />
+    <Content Include="Serviclean4\templates\login.html" />
+    <Content Include="Serviclean4\templates\register.html" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|VisualStudio|Serviclean4" />
+  </ItemGroup>
+  <ItemGroup>
+    <Interpreter Include="env1\">
+      <Id>env1</Id>
+      <Version>3.7</Version>
+      <Description>env1 (Python 3.7 (32-bit))</Description>
+      <InterpreterPath>Scripts\python.exe</InterpreterPath>
+      <WindowsInterpreterPath>Scripts\pythonw.exe</WindowsInterpreterPath>
+      <PathEnvironmentVariable>PYTHONPATH</PathEnvironmentVariable>
+      <Architecture>X86</Architecture>
+    </Interpreter>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)\Python Tools\Microsoft.PythonTools.Web.targets" />
   <!-- Specify pre- and post-build commands in the BeforeBuild and 
