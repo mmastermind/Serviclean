@@ -29,6 +29,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="runserver.py" />
+    <Compile Include="Serviclean4\extensions.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serviclean4\__init__.py" />
     <Compile Include="Serviclean4\views.py" />
   </ItemGroup>
