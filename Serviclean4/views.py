@@ -11,6 +11,9 @@ from .extensions import mongo
 
 
 @app.route('/')
+def index():
+    return render_template('login.html')
+
 @app.route('/home')
 def home():
     """Renders the home/index page to login."""
