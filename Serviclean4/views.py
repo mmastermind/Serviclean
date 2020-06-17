@@ -16,10 +16,10 @@ def index():
 
 @app.route('/home')
 def home():
-    """Renders the home/index page to login."""
+    """Renders the home page after succesful login."""
     return render_template(
         'home.html',
-        title='Home Page',
+        title='Inicio',
         year=datetime.now().year,
     )
 
@@ -56,7 +56,6 @@ def login():
         if request.form['password'] == login_user['password']:
             session['username'] = request.form['username']
             #Change of return by returning a template of home insted of redirect
-            print('Llegue hasta aqui')
             return render_template(
                 "home.html",
                 title='Inicio',
@@ -76,14 +75,14 @@ def register_home():
         if existing_profile['Perfil'] == 'Colaborador':
             return render_template(
                 'register.html',
-                title='Registro pagina 2',
+                title='Registro',
                 year=datetime.now().year,
                 message='Por favor ingrese el resto de datos solicitados'
             )
         elif existing_profile['Perfil'] == 'Supervisor' or existing_profile['Perfil'] == 'Cliente':
             return render_template(
                 'register.html',
-                title='Registro Avanzado',
+                title='Registro',
                 year=datetime.now().year,
                 message='Por favor ingrese el resto de datos solicitados'
             )
@@ -121,13 +120,13 @@ def register():
                 )
             return render_template(
                 'register.html',
-                title='Registro Avanzado',
+                title='Registro',
                 year=datetime.now().year,
                 message='Las contraseñas no coinciden, favor de verificar!'
                 )
         return render_template(
             'register.html',
-            title='Registro Avanzado',
+            title='Registro',
             year=datetime.now().year,
             message='Nombre de usario existente / ya registrado!'
             )
