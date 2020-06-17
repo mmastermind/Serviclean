@@ -67,6 +67,36 @@ def login():
 
     return 'Combinación usuario / password invalida, intente de nuevo!'
                 
+@app.route('/register_home', methods=['POST', 'GET'])
+def register_home():
+    profiles = mongo.db.profiles
+#    profiles.insert({'Perfil' : 'Supervisor'})
+    if request.method == 'POST':
+        profiles = mongo.db.profiles
+        existing_profile = profiles.find_one({'Perfil' : request.form['perfil']})
+        print(existing_profile)
+        if existing_profile['Perfil'] == 'Colaborador':
+            print('llegue al colaborador')
+            return render_template(
+                'register.html',
+                title='Registro pagina 2',
+                year=datetime.now().year,
+                message='Por favor ingrese el resto de datos solicitados'
+            )
+        elif existing_profile['Perfil'] == 'Supervisor' or existing_profile['Perfil'] == 'Cliente':
+            print('llegue al supervisor / cliente')
+            return render_template(
+                'register.html',
+                title='Registro Avanzado',
+                year=datetime.now().year,
+                message='Por favor ingrese el resto de datos solicitados'
+            )
+    return render_template(
+        "register_home.html",
+        title='Selección de usuario',
+        year=datetime.now().year,
+        message='Favor de ingresar su elección'
+    )
 
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -80,7 +110,11 @@ def register():
             #original line
             #hashpass = bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), bcrypt.gensalt())
             #users.insert({'name' : request.form['username'], 'password' : hashpass})
-            users.insert({'name' : request.form['username'], 'password' : request.form['password']})
+            users.insert({'name' : request.form['username'], 
+                          'password' : request.form['password'], 
+                          'email' : request.form['user_email'], 
+                          'keyword': request.form['keyword']})
+            #<input type="email" class="form-control" id="user_email" placeholder="nombre@ejemplo.com">
             session['username'] = request.form['username']
             #return redirect(url_for('login'))
             #change for render template
@@ -88,8 +122,7 @@ def register():
                 'home.html',
                 title='Home',
                 year=datetime.now().year,
-                message='Has ingresado con exito'
-                #message='You are logged in as ' + session['username']
+                message='Has ingresado con exito' + session['username']
             )
         return 'Nombre de usario existente / ya registrado!'
 

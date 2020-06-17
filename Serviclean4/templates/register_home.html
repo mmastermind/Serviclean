@@ -1,0 +1,28 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-4 col-md-offset-4">
+            <form method=POST action="{{ url_for('register_home') }}">
+                <div class="form-group">
+                    <label for="exampleFormControlSelect1">Perfil de usuario</label>
+                    <!--<select class="form-control" id="exampleFormControlSelect1">-->
+                    <select class="form-control" name="perfil" id="exampleFormControlSelect1">
+                        <option value="">------</option>
+                        <option value="Colaborador">Colaborador</option>
+                        <option value="Supervisor">Supervisor</option>
+                        <option value="Cliente">Cliente</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block">Siguiente paso</button>
+            </form>
+            <br>
+        </div>
+    </div>
+</div>
+{% endblock %}
