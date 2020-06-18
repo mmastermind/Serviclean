@@ -10,6 +10,10 @@
         <div class="col-md-4 col-md-offset-4">
             <form method=POST action="{{ url_for('register') }}">
                 <div class="form-group">
+                    <label for="exampleInputEmail1">Perfil</label>
+                    <input type="text" class="form-control" name="perfil" value={{ perfil }}>
+                </div>
+                <div class="form-group">
                     <label for="exampleInputEmail1">Usuario</label>
                     <input type="text" class="form-control" name="username" placeholder="Usuario">
                 </div>
