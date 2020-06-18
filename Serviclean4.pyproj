@@ -43,6 +43,7 @@
     <Folder Include="Serviclean4\static\" />
     <Folder Include="Serviclean4\static\content\" />
     <Folder Include="Serviclean4\static\fonts\" />
+    <Folder Include="Serviclean4\static\images\" />
     <Folder Include="Serviclean4\static\scripts\" />
     <Folder Include="Serviclean4\templates\" />
   </ItemGroup>
@@ -72,10 +73,14 @@
     <Content Include="Serviclean4\static\scripts\_references.js" />
     <Content Include="Serviclean4\templates\about.html" />
     <Content Include="Serviclean4\templates\contact.html" />
-    <Content Include="Serviclean4\templates\home.html" />
+    <Content Include="Serviclean4\templates\home_colab.html" />
+    <Content Include="Serviclean4\templates\home_admin.html" />
+    <Content Include="Serviclean4\templates\home_cliente.html" />
     <Content Include="Serviclean4\templates\layout.html" />
     <Content Include="Serviclean4\templates\login.html" />
     <Content Include="Serviclean4\templates\register.html" />
+    <Content Include="Serviclean4\templates\register_home.html" />
+    <Content Include="Serviclean4\templates\home_sup.html" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|VisualStudio|Serviclean4" />
