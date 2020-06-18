@@ -3,13 +3,16 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ title }} - My Flask Application</title>
+    <title>{{ title }} - ServiClean App</title>
     <link rel="stylesheet" type="text/css" href="/static/content/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/static/content/site.css" />
     <script src="/static/scripts/modernizr-2.6.2.js"></script>
 </head>
 
 <body>
+    <div class="header_m">
+        <img src="static/images/logo_esasa.jpg" alt="logo" />
+    </div>
     <div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
@@ -18,15 +21,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a href="/" class="navbar-brand">Application name</a>
+                <a href="/" class="navbar-brand">ServiClean</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a href="{{ url_for('about') }}">About</a></li>
-                    changed from about to login to match changes in views.py
-                    <li><a href="{{ url_for('index') }}">Login</a></li>
-                    <li><a href="{{ url_for('register') }}">Register</a></li>
-                    <li><a href="{{ url_for('contact') }}">Contact</a></li>
+                    <li><a href="{{ url_for('about') }}">Acerca de</a></li>
+                    <li><a href="{{ url_for('index') }}">Ingresar</a></li>
+                    <li><a href="{{ url_for('register_home') }}">Registro</a></li>
+                    <li><a href="{{ url_for('contact') }}">Contacto / ayuda</a></li>
                 </ul>
             </div>
         </div>
@@ -36,7 +38,7 @@
         {% block content %}{% endblock %}
         <hr />
         <footer>
-            <p>&copy; {{ year }} - My Flask Application</p>
+            <p>&copy; {{ year }} - Bd2W</p>
         </footer>
     </div>
 
