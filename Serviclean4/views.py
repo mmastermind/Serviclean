@@ -3,12 +3,42 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, url_for, request, session, redirect
+from flask import render_template, url_for, request, session, redirect, flash
+from flask_login import login_required, current_user, UserMixin, login_user
 #imports from init.py the initialized app
 from Serviclean4 import app
-#imports pymongo from extensions
+#imports required extensions
 from .extensions import mongo 
+from .extensions import login_manager
 
+#users = mongo.db.users
+users = {'foo@bar.tld': {'password': 'secret'}}
+
+print(users)
+class User(UserMixin):
+    pass
+
+@login_manager.user_loader
+def user_loader(user_login):
+#    users = mongo.db.users    
+    print('here')
+    if user_login not in users:
+        return ('Pelation time')
+
+    user = User()
+    user.id = user_login
+    print('se uso user_loader')
+    return user
+
+
+@app.route('/logout')
+def logout():
+    flask_login.logout_user()
+    return 'Logged out'
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return 'Unauthorized'
 
 @app.route('/')
 def index():
@@ -34,57 +64,92 @@ def contact():
     )
 
 @app.route('/about')
+@login_required
 def about():
     """Renders the about page."""
     return render_template(
-        'home.html',
+        'about.html',
         title='About',
         year=datetime.now().year,
         message='Your application description page.'
     )
 
-@app.route('/login', methods=['POST'])
-def login():
-    #creates a collection of users
-    users = mongo.db.users
-    login_user = users.find_one({'name' : request.form['username']})
+@login_manager.request_loader
+def request_loader(request):
+#    users = mongo.db.users
+    username = request.form.get('username')
+    if username not in users:
+        return ('cucumber')
 
-    if login_user:
+    user = User()
+    user.id = username
+    user.is_authenticated = request.form['password'] == users[user_login]['password']
+    print('aqui')
+
+    return user
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    #aqui borre flask.request.method
+    if request.method == 'GET':
+        return (login.html)
+
+    #Defines the collection of users
+    #users = mongo.db.users
+    #user_login = users.find_one({'name' : request.form['username']})
+    
+    #aqui borre flask.request.form
+    user_login = request.form['username']
+    if user_login:
         #change removing encode('utf-8') because of debugging issue: 'bytes' object has no attribute 'encode'
         #original line:
         #if bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), login_user['password'].encode(encoding='UTF-8')) == login_user['password'].encode(encoding='UTF-8'):
-        if request.form['password'] == login_user['password']:
+        
+       # debugging purposes    if request.form['password'] == user_login['password']:
+        if request.form['password'] == users[user_login]['password']:
             session['username'] = request.form['username']
-            perfil = login_user['perfil']
-            #Change of return by returning a template of home insted of redirect
-            if perfil == 'Colaborador':
-                return render_template(
-                    'home_colab.html',
-                    title='Inicio',
-                    year=datetime.now().year,
-                    message='Has ingresado con exito ' + session['username']
-                )
-            elif perfil == 'Supervisor':
-                return render_template(
-                    'home_sup.html',
-                    title='Inicio',
-                    year=datetime.now().year,
-                    message='Has ingresado con exito ' + session['username']
-                )
-            elif perfil == 'Cliente':
-                    return render_template(
-                    'home_cliente.html',
-                    title='Inicio',
-                    year=datetime.now().year,
-                    message='Has ingresado con exito ' + session['username']
-                )
-            else:
-                    return render_template(
-                    'home_admin.html',
-                    title='Inicio',
-                    year=datetime.now().year,
-                    message='Has ingresado con exito ' + session['username']
-                )
+
+             # Login and validate the user.
+            user = User()
+            user.id = user_login
+            login_user(user)
+
+            print('se ha ingresado a: ')
+
+            flash('Ingreso exitoso.', category = 'message')  
+
+            return redirect(url_for('about'))
+            
+            #perfil = user_login['perfil']
+            ##Change of return by returning a template of home insted of redirect
+            #if perfil == 'Colaborador':
+            #    return render_template(
+            #        'home_colab.html',
+            #        title='Inicio',
+            #        year=datetime.now().year,
+            #        message='Has ingresado con exito ' + session['username']
+            #    )
+            #elif perfil == 'Supervisor':
+            #    return render_template(
+            #        'home_sup.html',
+            #        title='Inicio',
+            #        year=datetime.now().year,
+            #        message='Has ingresado con exito ' + session['username']
+            #    )
+            #elif perfil == 'Cliente':
+            #        return render_template(
+            #        'home_cliente.html',
+            #        title='Inicio',
+            #        year=datetime.now().year,
+            #        message='Has ingresado con exito ' + session['username']
+            #    )
+            #else:
+            #        return render_template(
+            #        'home_admin.html',
+            #        title='Inicio',
+            #        year=datetime.now().year,
+            #        message='Has ingresado con exito ' + session['username']
+            #    )
 
     return 'Combinación usuario / password invalida, intente de nuevo!'
                 
