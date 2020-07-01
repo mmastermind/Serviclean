@@ -5,18 +5,17 @@ Routes and views for the flask application.
 from datetime import datetime
 from flask import render_template, url_for, request, session, redirect, flash
 from flask_login import login_required, current_user, UserMixin, login_user, logout_user
+from bson.objectid import ObjectId
 #imports from init.py the initialized app
 from Serviclean4 import app
 #imports required extensions
 from .extensions import mongo 
 from .extensions import login_manager
-from bson.objectid import ObjectId
 
+#Defines the collection of users
 users = mongo.db.users
-#users = {'foo@bar.tld': {'password': 'secret'}}
 user_login = None
 
-#print(users)
 class User(UserMixin):
     pass
 
@@ -92,16 +91,11 @@ def request_loader(request):
 
 @app.route('/login', methods=['GET','POST'])
 def login():
- 
-    #user_login = None
+
     if request.method == 'GET':
         return (login.html)
 
-    #Defines the collection of users
-    #users = mongo.db.users
- 
     user_login = request.form['username']
-    #print('login route: ' + user_login)
     if user_login:
         #Verifying user is in database
         db_login = users.find_one({'name' : user_login})
@@ -110,19 +104,12 @@ def login():
         #if bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), login_user['password'].encode(encoding='UTF-8')) == login_user['password'].encode(encoding='UTF-8'):
         if request.form['password'] == db_login['password']:
             session['username'] = request.form['username']
-             # Login and validate the user.
+            # Login and validate the user.
             user = User()
             user.id = user_login
             login_user(user)
-            #print(user.id)
-            #print('se ha ingresado a: ' + user.id)
-
-            #flash('Ingreso exitoso.', category = 'message')  
-
-            #return redirect(url_for(''))
-            
             perfil = db_login['perfil']
-            #Change of return by returning a template of home insted of redirect
+            #Pending optimizing redirect_url with profile variable
             if perfil == 'Colaborador':
                 return render_template(
                     'home_colab.html',
