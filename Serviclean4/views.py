@@ -65,42 +65,36 @@ def about():
 
 @login_manager.user_loader
 def user_loader(user_login):   
-    #print('inicio user_loader ' + user_login)
     user = User()
     user.id = user_login
-    #print('fin uso user_loader ' + user.id)
-        
+
     return user
 
 
 @login_manager.request_loader
 def request_loader(request):
-    #print('inicio_request_loader')
     username = request.form.get('username')
-    #Linea agregada para evitar "collection not iterable":
+    #retrieve from the database user info":
     user_login_temp = users.find_one({'name' : username})
-    #print(user_login_temp)
     if user_login_temp:
         user = User()
         user.id = username
         user.is_authenticated = request.form['password'] == users[user_login]['password']
-        #print('fin_request_loader' + user.id)
-        
+
         return user
-    return ('No ingreso por req loader ', None)
+    return ('Invalido ', None)
 
 @app.route('/login', methods=['GET','POST'])
 def login():
-
     if request.method == 'GET':
         return (login.html)
 
     user_login = request.form['username']
     if user_login:
-        #Verifying user is in database
+        #Verifying user is in database and retrieving info
         db_login = users.find_one({'name' : user_login})
         #change removing encode('utf-8') because of debugging issue: 'bytes' object has no attribute 'encode'
-        #original line:
+        #pending implementing bcrypt:
         #if bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), login_user['password'].encode(encoding='UTF-8')) == login_user['password'].encode(encoding='UTF-8'):
         if request.form['password'] == db_login['password']:
             session['username'] = request.form['username']
