@@ -61,41 +61,34 @@ def about():
         'about.html',
         title='About',
         year=datetime.now().year,
-        message='Your application description page.'
+        message='Application description page.'
     )
 
 @login_manager.user_loader
-def user_loader(user_login):
-    
-    print('inicio user_loader ' + user_login)
-    #user_login = users.find_one({'name' : request.form['username']})
-    user_login_temp = users.find_one({'name' : user_login})
-    print(user_login_temp)
-    #if user_login_temp not in users:
-    if user_login_temp:
-        user = User()
-        user.id = user_login
-        print('fin uso user_loader ' + user.id)
+def user_loader(user_login):   
+    #print('inicio user_loader ' + user_login)
+    user = User()
+    user.id = user_login
+    #print('fin uso user_loader ' + user.id)
         
-        return user
-    return None
+    return user
+
 
 @login_manager.request_loader
 def request_loader(request):
-
-    print('inicio_request_loader')
+    #print('inicio_request_loader')
     username = request.form.get('username')
     #Linea agregada para evitar "collection not iterable":
-    user_login_temp = users.find_one({'name' : ObjectId(username)})
-    print(user_login_temp)
+    user_login_temp = users.find_one({'name' : username})
+    #print(user_login_temp)
     if user_login_temp:
         user = User()
         user.id = username
         user.is_authenticated = request.form['password'] == users[user_login]['password']
-        print('fin_request_loader' + user.id)
+        #print('fin_request_loader' + user.id)
         
-        return (user)
-    return ('No ingreso ', None)
+        return user
+    return ('No ingreso por req loader ', None)
 
 @app.route('/login', methods=['GET','POST'])
 def login():
@@ -107,60 +100,57 @@ def login():
     #Defines the collection of users
     #users = mongo.db.users
  
-    
     user_login = request.form['username']
-    print('login route: ' + user_login)
+    #print('login route: ' + user_login)
     if user_login:
+        #Verifying user is in database
         db_login = users.find_one({'name' : user_login})
         #change removing encode('utf-8') because of debugging issue: 'bytes' object has no attribute 'encode'
         #original line:
         #if bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), login_user['password'].encode(encoding='UTF-8')) == login_user['password'].encode(encoding='UTF-8'):
-        print('login: ')
-        print(db_login)
-       # debugging purposes    if request.form['password'] == user_login['password']:
         if request.form['password'] == db_login['password']:
             session['username'] = request.form['username']
              # Login and validate the user.
             user = User()
             user.id = user_login
             login_user(user)
-            print(user.id)
-            print('se ha ingresado a: ' + user.id)
+            #print(user.id)
+            #print('se ha ingresado a: ' + user.id)
 
-            flash('Ingreso exitoso.', category = 'message')  
+            #flash('Ingreso exitoso.', category = 'message')  
 
-            return redirect(url_for('about'))
+            #return redirect(url_for(''))
             
-            #perfil = user_login['perfil']
-            ##Change of return by returning a template of home insted of redirect
-            #if perfil == 'Colaborador':
-            #    return render_template(
-            #        'home_colab.html',
-            #        title='Inicio',
-            #        year=datetime.now().year,
-            #        message='Has ingresado con exito ' + session['username']
-            #    )
-            #elif perfil == 'Supervisor':
-            #    return render_template(
-            #        'home_sup.html',
-            #        title='Inicio',
-            #        year=datetime.now().year,
-            #        message='Has ingresado con exito ' + session['username']
-            #    )
-            #elif perfil == 'Cliente':
-            #        return render_template(
-            #        'home_cliente.html',
-            #        title='Inicio',
-            #        year=datetime.now().year,
-            #        message='Has ingresado con exito ' + session['username']
-            #    )
-            #else:
-            #        return render_template(
-            #        'home_admin.html',
-            #        title='Inicio',
-            #        year=datetime.now().year,
-            #        message='Has ingresado con exito ' + session['username']
-            #    )
+            perfil = db_login['perfil']
+            #Change of return by returning a template of home insted of redirect
+            if perfil == 'Colaborador':
+                return render_template(
+                    'home_colab.html',
+                    title='Inicio',
+                    year=datetime.now().year,
+                    message='Has ingresado con exito ' + session['username']
+                )
+            elif perfil == 'Supervisor':
+                return render_template(
+                    'home_sup.html',
+                    title='Inicio',
+                    year=datetime.now().year,
+                    message='Has ingresado con exito ' + session['username']
+                )
+            elif perfil == 'Cliente':
+                    return render_template(
+                    'home_cliente.html',
+                    title='Inicio',
+                    year=datetime.now().year,
+                    message='Has ingresado con exito ' + session['username']
+                )
+            else:
+                    return render_template(
+                    'home_admin.html',
+                    title='Inicio',
+                    year=datetime.now().year,
+                    message='Has ingresado con exito ' + session['username']
+                )
 
     return 'Combinación usuario / password invalida, intente de nuevo!'
                 
