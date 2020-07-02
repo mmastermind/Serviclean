@@ -4,6 +4,7 @@ The flask application package.
 
 from flask import Flask
 from .extensions import mongo
+from .extensions import login_manager
 
 app = Flask(__name__)
 
@@ -13,8 +14,11 @@ config_object='Serviclean4.settings'
 app.config.from_object(config_object)
 mongo.init_app(app)
 
+
 if __name__ == '__main__':
     app.run(Debug = True)
 
 #imports the different app routes from views.py file
+
+login_manager.init_app(app)
 import Serviclean4.views

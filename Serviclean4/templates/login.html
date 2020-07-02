@@ -10,11 +10,11 @@
             <form method=POST action="{{ url_for('login') }}">
                 <div class="form-group">
                     <label for="exampleInputEmail1">Nombre de usuario</label>
-                    <input type="text" class="form-control" name="username" placeholder="Usuario">
+                    <input type="text" class="form-control" name="username" id="username" placeholder="Usuario">
                 </div>
                 <div class="form-group">
                     <label for="exampleInputPassword1">Contraseña</label>
-                    <input type="password" class="form-control" name="password" placeholder="Contraseña">
+                    <input type="password" class="form-control" name="password" id="pass" placeholder="Contraseña">
                 </div>
                 <button type="submit" class="btn btn-primary btn-block">Ingresar</button>
             </form>

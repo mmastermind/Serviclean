@@ -3,12 +3,31 @@ Routes and views for the flask application.
 """
 
 from datetime import datetime
-from flask import render_template, url_for, request, session, redirect
+from flask import render_template, url_for, request, session, redirect, flash
+from flask_login import login_required, current_user, UserMixin, login_user, logout_user
+from bson.objectid import ObjectId
 #imports from init.py the initialized app
 from Serviclean4 import app
-#imports pymongo from extensions
+#imports required extensions
 from .extensions import mongo 
+from .extensions import login_manager
 
+#Defines the collection of users
+users = mongo.db.users
+user_login = None
+
+class User(UserMixin):
+    pass
+
+@app.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return 'Logged out'
+
+@login_manager.unauthorized_handler
+def unauthorized_handler():
+    return 'Unauthorized'
 
 @app.route('/')
 def index():
@@ -34,29 +53,57 @@ def contact():
     )
 
 @app.route('/about')
+@login_required
 def about():
     """Renders the about page."""
     return render_template(
-        'home.html',
+        'about.html',
         title='About',
         year=datetime.now().year,
-        message='Your application description page.'
+        message='Application description page.'
     )
 
-@app.route('/login', methods=['POST'])
-def login():
-    #creates a collection of users
-    users = mongo.db.users
-    login_user = users.find_one({'name' : request.form['username']})
+@login_manager.user_loader
+def user_loader(user_login):   
+    user = User()
+    user.id = user_login
 
-    if login_user:
+    return user
+
+
+@login_manager.request_loader
+def request_loader(request):
+    username = request.form.get('username')
+    #retrieve from the database user info":
+    user_login_temp = users.find_one({'name' : username})
+    if user_login_temp:
+        user = User()
+        user.id = username
+        user.is_authenticated = request.form['password'] == users[user_login]['password']
+
+        return user
+    return ('Invalido ', None)
+
+@app.route('/login', methods=['GET','POST'])
+def login():
+    if request.method == 'GET':
+        return (login.html)
+
+    user_login = request.form['username']
+    if user_login:
+        #Verifying user is in database and retrieving info
+        db_login = users.find_one({'name' : user_login})
         #change removing encode('utf-8') because of debugging issue: 'bytes' object has no attribute 'encode'
-        #original line:
+        #pending implementing bcrypt:
         #if bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), login_user['password'].encode(encoding='UTF-8')) == login_user['password'].encode(encoding='UTF-8'):
-        if request.form['password'] == login_user['password']:
+        if request.form['password'] == db_login['password']:
             session['username'] = request.form['username']
-            perfil = login_user['perfil']
-            #Change of return by returning a template of home insted of redirect
+            # Login and validate the user.
+            user = User()
+            user.id = user_login
+            login_user(user)
+            perfil = db_login['perfil']
+            #Pending optimizing redirect_url with profile variable
             if perfil == 'Colaborador':
                 return render_template(
                     'home_colab.html',
@@ -91,6 +138,7 @@ def login():
 @app.route('/register_home', methods=['POST', 'GET'])
 def register_home():
     profiles = mongo.db.profiles
+#    Code line to input directly a new profile in the database:
 #    profiles.insert({'Perfil' : 'Supervisor'})
     if request.method == 'POST':
         profiles = mongo.db.profiles
