@@ -5,3 +5,5 @@ from flask_login import LoginManager
 mongo = PyMongo()
 login_manager = LoginManager()
 
+
+

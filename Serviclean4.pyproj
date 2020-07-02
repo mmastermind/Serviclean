@@ -32,6 +32,12 @@
     <Compile Include="Serviclean4\extensions.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serviclean4\util\email.py">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Serviclean4\util\security.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serviclean4\settings.py">
       <SubType>Code</SubType>
     </Compile>
@@ -40,6 +46,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Serviclean4\" />
+    <Folder Include="Serviclean4\templates\home\" />
+    <Folder Include="Serviclean4\templates\user\" />
+    <Folder Include="Serviclean4\util\" />
     <Folder Include="Serviclean4\static\" />
     <Folder Include="Serviclean4\static\content\" />
     <Folder Include="Serviclean4\static\fonts\" />
@@ -73,14 +82,15 @@
     <Content Include="Serviclean4\static\scripts\_references.js" />
     <Content Include="Serviclean4\templates\about.html" />
     <Content Include="Serviclean4\templates\contact.html" />
-    <Content Include="Serviclean4\templates\home_colab.html" />
-    <Content Include="Serviclean4\templates\home_admin.html" />
-    <Content Include="Serviclean4\templates\home_cliente.html" />
+    <Content Include="Serviclean4\templates\home\home_colab.html" />
+    <Content Include="Serviclean4\templates\home\home_admin.html" />
+    <Content Include="Serviclean4\templates\home\home_cliente.html" />
     <Content Include="Serviclean4\templates\layout.html" />
     <Content Include="Serviclean4\templates\login.html" />
-    <Content Include="Serviclean4\templates\register.html" />
-    <Content Include="Serviclean4\templates\register_home.html" />
-    <Content Include="Serviclean4\templates\home_sup.html" />
+    <Content Include="Serviclean4\templates\user\register.html" />
+    <Content Include="Serviclean4\templates\user\register_home.html" />
+    <Content Include="Serviclean4\templates\home\home_sup.html" />
+    <Content Include="Serviclean4\templates\user\activate.html" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|VisualStudio|Serviclean4" />
