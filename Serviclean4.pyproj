@@ -35,6 +35,9 @@
     <Compile Include="Serviclean4\util\email.py">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Serviclean4\util\decorators.py">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Serviclean4\util\security.py">
       <SubType>Code</SubType>
     </Compile>
@@ -91,6 +94,7 @@
     <Content Include="Serviclean4\templates\user\register_home.html" />
     <Content Include="Serviclean4\templates\home\home_sup.html" />
     <Content Include="Serviclean4\templates\user\activate.html" />
+    <Content Include="Serviclean4\templates\user\unconfirmed.html" />
   </ItemGroup>
   <ItemGroup>
     <InterpreterReference Include="Global|VisualStudio|Serviclean4" />

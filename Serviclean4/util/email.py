@@ -1,6 +1,5 @@
 from flask_mail import Message
-from Serviclean4 import app
-
+from Serviclean4 import app, mail
 
 def send_email(to, subject, template):
     msg = Message(

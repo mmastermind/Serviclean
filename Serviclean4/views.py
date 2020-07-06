@@ -13,6 +13,7 @@ from .extensions import mongo
 from .extensions import login_manager
 from .util.security import ts
 from .util.email import send_email
+from .util.decorators import check_confirmed
 
 #from project.token import generate_confirmation_token, confirm_token
 
@@ -22,32 +23,33 @@ user_login = None
 
 #FINISH DEFINING THIS
 class User(UserMixin):
-    def __init__(self, username, password_hash):
-        self.username = username
-        self.password_hash = password_hash
+    #def __init__(self, username, password_hash):
+    #    self.username = username
+    #    self.password_hash = password_hash
 
-    def __init__(self, email, password, confirmed,
-                 paid=False, admin=False, confirmed_on=None):
-        self.email = email
-        self.password = bcrypt.generate_password_hash(password)
-        self.registered_on = datetime.datetime.now()
-        self.perfil = perfil
-        self.admin = admin
-        self.confirmed = confirmed
-        self.confirmed_on = confirmed_on
+    #def __init__(self, email, password, confirmed,
+    #             paid=False, admin=False, confirmed_on=None):
+    #    self.email = email
+    #    self.password = bcrypt.generate_password_hash(password)
+    #    self.registered_on = datetime.datetime.now()
+    #    self.perfil = perfil
+    #    self.admin = admin
+    #    self.confirmed = confirmed
+    #    self.confirmed_on = confirmed_on
     pass
 
-name' : request.form['username'], 
-                              'password' : request.form['password'], 
-                              'email' : request.form['user_email'], 
-                              'keyword': request.form['keyword'],
-                              'perfil': request.form['perfil'],
-                              'confirmed' : False,
-                              'registered_on': datetime.now(),
-                              'confirmed_on': None}
+#name' : request.form['username'], 
+#                              'password' : request.form['password'], 
+#                              'email' : request.form['user_email'], 
+#                              'keyword': request.form['keyword'],
+#                              'perfil': request.form['perfil'],
+#                              'confirmed' : False,
+#                              'registered_on': datetime.now(),
+#                              'confirmed_on': None}
 
 @app.route('/logout')
 @login_required
+@check_confirmed
 def logout():
     logout_user()
     return 'Logged out'
@@ -62,6 +64,7 @@ def index():
 
 @app.route('/home')
 @login_required
+@check_confirmed
 def home():
     """Renders the home page after succesful login."""
     return render_template(
@@ -98,17 +101,20 @@ def user_loader(user_login):
 
     return user
 
+#CHECK TO STANDARDIZE user_login variable between these two functions
 
 @login_manager.request_loader
 def request_loader(request):
     username = request.form.get('username')
     #retrieve from the database user info":
     user_login_temp = users.find_one({'name' : username})
+    print(user_login_temp)
+    print(user_login)
     if user_login_temp:
         user = User()
         user.id = username
         user.is_authenticated = request.form['password'] == users[user_login]['password']
-
+        print('aqui mero llegue')
         return user
     return ('Invalido ', None)
 
@@ -209,8 +215,7 @@ def register_home():
         profiles = mongo.db.profiles
         existing_profile = profiles.find_one({'Perfil' : request.form['perfil']})
         perfil = existing_profile['Perfil']
-        print(perfil)
-        if existing_profile['Perfil'] == 'Colaborador':
+        if perfil == 'Colaborador':
             return render_template(
                 'user/register.html',
                 title='Registro',
@@ -218,7 +223,7 @@ def register_home():
                 message='Por favor ingrese el resto de datos solicitados',
                 perfil=perfil,
             )
-        elif existing_profile['Perfil'] == 'Supervisor':
+        elif perfil == 'Supervisor':
             return render_template(
                 'user/register.html',
                 title='Registro',
@@ -226,7 +231,7 @@ def register_home():
                 perfil=existing_profile['Perfil'],
                 message='Por favor ingrese el resto de datos solicitados'
             )
-        elif existing_profile['Perfil'] == 'Cliente':
+        elif perfil == 'Cliente':
              return render_template(
                 'user/register.html',
                 title='Registro',
@@ -257,6 +262,7 @@ def register():
 
         if existing_user is None: 
             if request.form['password'] == request.form['password_rep']:
+                candidato = request.form['user_email']
                 #original line
                 #hashpass = bcrypt.hashpw(request.form['password'].encode(encoding='UTF-8'), bcrypt.gensalt())
                 #users.insert({'name' : request.form['username'], 'password' : hashpass})
@@ -274,20 +280,22 @@ def register():
                 # Send email confirmation link
                 subject = "Confirm your email"
                 #token = ts.dumps(self.email, salt='email-confirm-key')
-                token = ts.dumps(self.email, salt='email-confirm-key')
-                
+                token = ts.dumps(candidato, salt='my_precious_two')
+                #print(token)
+                #print(candidato)
                 confirm_url = url_for(
                     'confirm_email',
                     token=token,
                     _external=True)
-
+                #print(confirm_url)
                 html = render_template(
                     'user/activate.html',
                     confirm_url=confirm_url)
-
+                #print(html)
                 # send_email needs to be defined in /util.py
-                send_email(user.email, subject, html)
-
+                send_email(candidato, subject, html)
+                #print('mande correo')
+                
                 #code line from realpy after sending email, CHECK:
                 #login_user(user)
 
@@ -323,13 +331,16 @@ def register():
                 #SECURITY_PASSWORD_SALT = 'my_precious_two'
 
 
-                return redirect(url_for("index"), message = 'Correo de confirmación enviado, revise su correo para continuar')
+                #return render_template(
+                #    'user/register.html',
+                #    title='Registro',
+                #    year=datetime.now().year, message = 'Correo de confirmación enviado, revise su correo para continuar')
 
             return render_template(
-                'user/register.html',
-                title='Registro',
+                'login.html',
+                title='Completar registro',
                 year=datetime.now().year,
-                message='Las contraseñas no coinciden, favor de verificar!'
+                message='Correo de confirmacion enviado, revise su correo para terminar su registro!'
                 )
         return render_template(
             'user/register.html',
@@ -344,19 +355,44 @@ def register():
 @app.route('/confirm/<token>')
 def confirm_email(token):
     try:
-        email = ts.loads(token, salt="email-confirm-key", max_age=86400)
+        email = ts.loads(token, salt="my_precious_two", max_age=86400)
     except:
         abort(404)
 
-    user = users.find_one({'email' : email}).first_or_404()
-    if user.confirmed:
+    user = users.find_one({'email' : email})#.first_or_404()
+    print(user['confirmed'])
+    if user['confirmed'] is True:
         flash('Account already confirmed. Please login.', 'success')
     else:
     #user = User.query.filter_by(email=email).first_or_404()
-        user.insert_one({'confirmed': True},
-                        {'confirmed_on' : datetime.now()})
+        print(user['email'])
+        print(email)
+        users.update_one(
+            { 'email' : email }, 
+            {
+                "$set": { 'confirmed' : True, 'confirmed_on' : datetime.now()}
+             }, upsert = True
+        )
         flash('You have confirmed your account. Thanks! Please login now', 'success')  
-    #db.session.add(user)
-    #db.session.commit()
 
-    return redirect(url_for('login'))
+        return render_template(
+                    'login.html',
+                    title='Cuenta confirmada',
+                    year=datetime.now().year,
+                    message='Su cuenta ha sido confirmada, ya puede ingresar'
+                    )
+    return render_template(
+            'login.html',
+            title='Cuenta previamente confirmada',
+            year=datetime.now().year,
+            message='Ingrese sus credenciales para accesar'
+            )
+#PENDING unauthorized.html and proper syntaxis for MONGO
+
+@app.route('/unconfirmed')
+@login_required
+def unconfirmed():
+    if current_user.confirmed:
+        return redirect('about.html')
+    flash('Please confirm your account!', 'warning')
+    return render_template('user/unconfirmed.html')
