@@ -8,4 +8,4 @@ config_object='Serviclean4.settings'
 
 #config_object='Serviclean4.settings'
 ts = URLSafeTimedSerializer(app.config['SECRET_KEY'])
-#ts = URLSafeTimedSerializer(app.config.from_object(config_object))
+
