@@ -165,13 +165,11 @@ def login():
     if user_login:
         #Verifying user is in database and retrieving info
         db_login = users.find_one({'name' : user_login})
-        print(db_login)
         if db_login and db_login['confirmed'] is True:
-            password = request.form['password'].encode(encoding='UTF-8')
-            hashpw = bcrypt.hashpw(password, bcrypt.gensalt())
-            print('here')
-            if bcrypt.checkpw(password, hashpw):
-                print('now here')
+            password = db_login['password']
+            current_pass = request.form['password'].encode(encoding='UTF-8')
+            if bcrypt.checkpw(current_pass, password):
+                print('bcrypt allowed login')
                 session['username'] = request.form['username']
                 # Login and validate the user.
                 user = User()
@@ -179,7 +177,7 @@ def login():
                 login_user(user)
                 user.is_confirmed
                 perfil = db_login['perfil']
-                #Pending optimizing redirect_url with profile variable
+                #PENDING TO CHECK OPTIMIZE URL REDIRECT WITH FUNCTION
                 if perfil == 'Colaborador':
                     return render_template(
                         'home/home_colab.html',
