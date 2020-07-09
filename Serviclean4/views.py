@@ -5,7 +5,6 @@ import bcrypt
 from datetime import datetime
 from flask import render_template, url_for, request, session, redirect, flash
 from flask_login import login_required, current_user, UserMixin, login_user, logout_user
-#from bson.objectid import ObjectId
 #imports from init.py the initialized app
 from Serviclean4 import app
 #imports required extensions
@@ -15,9 +14,7 @@ from .extensions import login_manager
 from .util.security import ts
 from .util.email import send_email
 from .util.decorators import check_confirmed
-from .settings import BLG
-
-#from project.token import generate_confirmation_token, confirm_token
+from .settings import BLG, SECURITY_PASSWORD_SALT, SECRET_KEY
 
 #Defines the collection of users
 users = mongo.db.users
@@ -29,62 +26,6 @@ class User(UserMixin):
     @staticmethod
     def is_confirmed():
         return True
-
-#class User(db.Model):
-   ## where db is db = SQLAlchemy(app)
-
-    #__tablename__ = "users"
-
-    #id = db.Column(db.Integer, primary_key=True)
-    #email = db.Column(db.String, unique=True, nullable=False)
-    #password = db.Column(db.String, nullable=False)
-    #registered_on = db.Column(db.DateTime, nullable=False)
-    #admin = db.Column(db.Boolean, nullable=False, default=False)
-    #confirmed = db.Column(db.Boolean, nullable=False, default=False)
-    #confirmed_on = db.Column(db.DateTime, nullable=True)
-
-    #def __init__(self, username, password_hash):
-    #    self.username = username
-    #    self.password_hash = password_hash
-
-#  another example that has staticmethods to substitute UserMixin?
-#class User:
-    #def __init__(self, username):
-    #    self.username = username
-
-    #@staticmethod
-    #def is_authenticated():
-    #    return True
-
-    #@staticmethod
-    #def is_active():
-    #    return True
-
-    #@staticmethod
-    #def is_anonymous():
-    #    return False
-
-    #def get_id(self):
-    #    return self.username
-
-    #@staticmethod
-    #def check_password(password_hash, password):
-    #    return check_password_hash(password_hash, password)
-
-#My understanding of both codes, Model is not necessaary and table definition since we use Mongo not SQL:
-
-#class User(mongo):
-#    def __init__(self, nameu, emailu, passwordu, perfilu, keywordu, registered_onu, confirmedu, confirmed_on=None):
-
-#        self.nameu = users['name']
-#        self.emailu = emailu
-#        self.passwordu = bcrypt.generate_password_hash(passwordu)
-#        self.perfilu = perfilu
-#        self.keywordu = keywordu
-#        self.registered_onu = datetime.datetime.now()
-#        #self.admin = adminu
-#        self.confirmedu = confirmedu
-#        self.confirmed_onu = confirmed_onu
 
 @app.route('/logout')
 @login_required
@@ -169,7 +110,6 @@ def login():
             password = db_login['password']
             current_pass = request.form['password'].encode(encoding='UTF-8')
             if bcrypt.checkpw(current_pass, password):
-                print('bcrypt allowed login')
                 session['username'] = request.form['username']
                 # Login and validate the user.
                 user = User()
@@ -368,11 +308,10 @@ def register():
 
     return render_template('user/register.html') #render_template("accounts/create.html", form=form
 
-#PENDING FIX KEY EXPOSED
 @app.route('/confirm/<token>')
 def confirm_email(token):
     try:
-        email = ts.loads(token, salt="my_precious_two", max_age=86400)
+        email = ts.loads(token, salt=SECURITY_PASSWORD_SALT, max_age=86400)
     except:
         abort(404)
 
@@ -401,11 +340,10 @@ def confirm_email(token):
             message='Ingrese sus credenciales para accesar'
             )
 
-#PENDING unauthorized.html and proper syntaxis for MONGO
+
 @app.route('/unconfirmed')
-@login_required
 def unconfirmed():
-    if current_user.confirmed:
-        return redirect('about.html')
+    if current_user.is_confirmed:
+        return redirect('login.html')
     flash('Please confirm your account!', 'warning')
     return render_template('user/unconfirmed.html')
