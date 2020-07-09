@@ -1,0 +1,34 @@
+﻿{% extends "layout.html" %}
+
+{% block content %}
+<h3>{{ message }}.</h3>
+
+<div class="jumbotron">
+    <h1>Supervisor</h1>
+    <p class="lead">Pagina de incio para administración y gestión de colaboradores, reportes y supervisión.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4 col-md-offset-4">
+        <form method=POST action="{{ url_for('home') }}">
+            <div class="form-group">
+                <label for="exampleFormControlSelect1">¿Qué desea realizar?</label>
+                <!--<select class="form-control" id="exampleFormControlSelect1">-->
+                <select class="form-control" name="perfil" id="exampleFormControlSelect1">
+                    <option value="">------</option>
+                    <option value="asignacion">Asignar un colaborador a una Unidad</option>
+                    <option value="procedimiento">Crear procedimiento</option>
+                    <option value="qr">Crear QR / actividad</option>
+                    <option value="rutina">Crear rutina</option>
+                    <option value="actividad_mod">Modificar / resetear actividad</option>
+                    <option value="reportes">Reportes</option>
+                    <option value="excepciones">Manejo de excepciones</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary btn-block">Siguiente</button>
+        </form>
+        <br>
+    </div>
+</div>
+
+{% endblock %}

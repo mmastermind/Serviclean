@@ -3,7 +3,11 @@ The flask application package.
 """
 
 from flask import Flask
+from flask_mail import Mail
 from .extensions import mongo
+from .extensions import login_manager
+
+mail = Mail()
 
 app = Flask(__name__)
 
@@ -17,4 +21,7 @@ if __name__ == '__main__':
     app.run(Debug = True)
 
 #imports the different app routes from views.py file
+login_manager.init_app(app)
+mail.init_app(app)
+
 import Serviclean4.views
